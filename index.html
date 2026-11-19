@@ -117,6 +117,11 @@ ol.queue li .t { overflow-wrap: anywhere; }
 ol.queue li .a { color: var(--muted); font-size: 12.5px; display: block; }
 .share { display: flex; gap: 8px; }
 .share input { flex: 1; min-width: 0; background: var(--ink); border: 1px solid var(--line); color: var(--text); border-radius: 8px; padding: 8px 10px; font: 400 12px var(--font-mono); }
+a.brave { display: flex; gap: 14px; align-items: center; text-decoration: none; color: var(--text); transition: border-color .2s; }
+a.brave:hover { border-color: #fb542b; }
+a.brave img { flex: none; width: 40px; height: auto; }
+a.brave strong { display: block; font-weight: 600; font-size: 14.5px; }
+a.brave span span { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.4; }
 .note { color: var(--muted); font-size: 12.5px; margin: 10px 0 0; }
 footer { color: var(--muted); font-size: 12.5px; text-align: center; }
 footer a { color: var(--muted); }
@@ -175,6 +180,13 @@ footer a { color: var(--muted); }
     </section>
 
     <aside>
+      <a class="card brave" id="brave" href="https://brave.com/download/" target="_blank" rel="noopener">
+        <img src="https://brave.com/static-assets/images/brave-logo-sans-text.svg" alt="Brave logó" width="40" height="46">
+        <span>
+          <strong>Ajánlott a Brave böngésző</strong>
+          <span id="braveTxt">Reklámok nélkül szól a rádió. Kattints a letöltéshez.</span>
+        </span>
+      </a>
       <section class="card">
         <h2>Következik</h2>
         <ol class="queue" id="queue"></ol>
@@ -678,6 +690,16 @@ $("copy").addEventListener("click", async () => {
 });
 $("trackCount").textContent = TRACKS.length + " szám a műsoron, minden bekapcsolásnál keverve.";
 renderQueue();
+
+// ha már Brave-ből nézik, ne letöltésre hívjuk, hanem az automatikus lejátszásra figyelmeztessünk
+(async () => {
+  try {
+    if (navigator.brave && await navigator.brave.isBrave()) {
+      $("braveTxt").textContent = "Már Brave-et használsz. Ha váltáskor csend lesz, engedélyezd az automatikus lejátszást az oldalnak.";
+      $("brave").href = "https://brave.com/";
+    }
+  } catch (_) {}
+})();
 </script>
 </body>
 </html>
