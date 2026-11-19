@@ -497,8 +497,12 @@ let on = false;
 let queue = [];            // a sorrend (indexek a TRACKS-ben)
 let pos = 0;               // hol tartunk a sorban
 let current = [null, null];// melyik track van az egyes lejátszókon
-let fade = null;           // { from, to, start, len }
+let fade = null;           // { from, to, len, elapsed, started, waitSince }
 let pendingNext = false;   // a következő szám már töltődik
+let prep = null;           // előtöltés: { i, p, ready } – a következő szám a háttérben, némítva
+const LEAD = 45;           // ennyi mp-cel az átúsztatás előtt kezdjük betölteni a következőt
+const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+let lastTick = performance.now();
 let master = 80;
 let fadeLen = 8;
 const bad = new Set();
@@ -540,26 +544,46 @@ function onPlayerError(i, e) {
   const tr = current[i];
   if (tr) bad.add(tr.id);
   console.warn("Nem lejátszható, ugrok:", tr && tr.t, e.data);
-  if (i === active && !fade) {
+  if (prep && i === prep.i && !fade) {
+    // az előtöltött szám hibás → kivesszük a sorból, a következő körben a másikat töltjük
+    queue.splice(prep.p, 1); prep = null;
+  } else if (i === active && !fade) {
     // az épp szóló szám hibás → azonnal a következő, kemény váltással
-    pos++; pendingNext = false; startOn(active, trackAt(pos), master);
-  } else {
-    // a bejövő hibás → kihagyjuk, újrapróbáljuk a következővel
-    fade = null; pendingNext = false; pos++;
+    prep = null; pos++; pendingNext = false; startOn(active, trackAt(pos), master);
+  } else if (fade && i === fade.to) {
+    // a bejövő hibás → kivesszük, a régi szól tovább, és újra próbálkozunk
+    queue.splice(pos, 1); pos--;
+    fade = null; pendingNext = false;
     setVol(active, master); slots[active].style.opacity = 1; slots[1 - active].style.opacity = 0;
+    $("xfade").classList.remove("active");
   }
   renderQueue();
 }
 
 function onState(i, e) {
   if (!on) return;
-  if (e.data === YT.PlayerState.ENDED && i === active && !fade) {
+  const S = YT.PlayerState;
+  if (e.data === S.ENDED && i === active && !fade) {
     // átúsztatás nélküli (0 mp) vagy elmaradt váltás → lépjünk
     beginCrossfade(true);
   }
-  if (e.data === YT.PlayerState.PLAYING && fade && i === fade.to && !fade.start) {
-    fade.start = performance.now();
+  // előtöltés: amint a háttérben elindult, megállítjuk az elején – a YouTube tovább pufferel
+  if (e.data === S.PLAYING && prep && i === prep.i && !prep.ready && !(fade && fade.to === i)) {
+    players[i].pauseVideo();
+    players[i].seekTo(0, true);
+    prep.ready = true;
   }
+  if (e.data === S.PLAYING && fade && i === fade.to) fade.started = true;
+}
+
+/* ---------- előtöltés: a következő szám már a háttérben töltődik ---------- */
+function preload(i, p) {
+  const tr = trackAt(p);
+  prep = { i, p, ready: false };
+  current[i] = tr;
+  setVol(i, 0);
+  if (isIOS) { try { players[i].mute(); } catch (_) {} } // iPhone-on a hangerő nem állítható, ott némítunk
+  players[i].loadVideoById({ videoId: tr.id });
 }
 
 function setVol(i, v) { try { players[i].setVolume(Math.round(v)); } catch (_) {} }
@@ -580,12 +604,19 @@ function beginCrossfade(hard) {
   const tr = trackAt(pos);
   pendingNext = true;
   const len = hard ? 0.4 : Math.max(0.4, fadeLen);
-  fade = { from: active, to, start: 0, len };
-  startOn(to, tr, 0);
+  fade = { from: active, to, len, elapsed: 0, started: false, waitSince: performance.now() };
+  if (prep && prep.i === to && prep.p === pos) {
+    // már be van töltve → csak az elejéről elindítjuk, nincs várakozás
+    current[to] = tr;
+    setVol(to, 0);
+    try { players[to].unMute(); } catch (_) {}
+    players[to].seekTo(0, true);
+    players[to].playVideo();
+  } else {
+    startOn(to, tr, 0);
+  }
+  prep = null;
   showNow();
-  // ha 6 mp alatt sem indul el a bejövő szám, kemény váltás
-  const myFade = fade;
-  setTimeout(() => { if (fade === myFade && !fade.start) fade.start = performance.now() - fade.len * 1000; }, 6000);
 }
 
 function finishFade() {
@@ -601,6 +632,7 @@ function finishFade() {
 }
 
 function tick() {
+  const now = performance.now(), dt = now - lastTick; lastTick = now;
   if (!on || ready < 2) return;
   const p = players[active];
   const cur = p.getCurrentTime ? p.getCurrentTime() : 0;
@@ -613,11 +645,18 @@ function tick() {
     const left = dur - cur;
     // 10 percnél hosszabb videó (koncertfilm, mix) nem rádióba való → tovább
     if (dur > 600 && current[active]) { bad.add(current[active].id); beginCrossfade(false); return; }
+    // időben elkezdjük a háttérben betölteni a következő számot (lassú netnél is kész lesz)
+    if (!prep && dur > 20 && left <= fadeLen + LEAD) preload(1 - active, pos + 1);
     if (dur > 20 && left <= fadeLen + 0.25 && p.getPlayerState() === YT.PlayerState.PLAYING) beginCrossfade(false);
-    else if (dur > 0 && left > fadeLen) $("xfadeTxt").innerHTML = "Átúsztatás <strong>" + fmt(left - fadeLen) + "</strong> múlva ide: " + esc(trackAt(pos + 1).t);
-  } else if (fade.start) {
+    else if (dur > 0 && left > fadeLen) {
+      const st = prep ? (prep.ready ? " · <strong>betöltve ✓</strong>" : " · töltődik…") : "";
+      $("xfadeTxt").innerHTML = "Átúsztatás <strong>" + fmt(left - fadeLen) + "</strong> múlva ide: " + esc(trackAt(pos + 1).t) + st;
+    }
+  } else if (fade.started) {
+    // csak akkor haladunk, amikor a bejövő szám ténylegesen szól (ha megakad, a keverés is vár)
+    if (players[fade.to].getPlayerState() === YT.PlayerState.PLAYING) fade.elapsed += dt;
     // egyenletes teljesítményű (equal-power) görbe: nincs hanglyuk középen
-    const x = Math.min(1, (performance.now() - fade.start) / (fade.len * 1000));
+    const x = Math.min(1, fade.elapsed / (fade.len * 1000));
     const vOut = Math.cos(x * Math.PI / 2), vIn = Math.sin(x * Math.PI / 2);
     setVol(fade.from, master * vOut); setVol(fade.to, master * vIn);
     slots[fade.to].style.opacity = x; slots[fade.from].style.opacity = 1 - x * 0.999;
@@ -628,6 +667,8 @@ function tick() {
     if (x >= 1) finishFade();
   } else {
     $("xfadeTxt").innerHTML = "<strong>Töltődik</strong> ▸ " + esc(current[fade.to].t);
+    // 25 mp után sem indult el → ezt kihagyjuk, és a következővel próbálkozunk
+    if (now - fade.waitSince > 25000) onPlayerError(fade.to, { data: "timeout" });
   }
 }
 setInterval(tick, 100);
@@ -667,6 +708,7 @@ $("power").addEventListener("click", () => {
   } else {
     players.forEach((p) => { try { p.stopVideo(); } catch (_) {} });
     if (fade) { active = fade.to; fade = null; pendingNext = false; }
+    prep = null;
     $("xfade").classList.remove("active");
     $("xfadeTxt").textContent = "Az átúsztatás a szám utolsó másodperceiben indul.";
   }
