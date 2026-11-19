@@ -174,7 +174,11 @@ footer a { color: var(--muted); }
         </div>
         <div class="knob">
           <label for="fade">Átúsztatás <output id="fadeOut">8 mp</output></label>
-          <input type="range" id="fade" min="0" max="15" value="8">
+          <input type="range" id="fade" min="0" max="30" value="8">
+        </div>
+        <div class="knob">
+          <label for="early">Korábbi váltás <output id="earlyOut">ki</output></label>
+          <input type="range" id="early" min="0" max="30" value="0">
         </div>
       </div>
     </section>
@@ -220,24 +224,24 @@ const TRACKS = [
   { id: "jtcpb5Zml3g", t: "PANNONIA", a: "DESH x Young Fly x Azahriah" },
   { id: "RC7_OkIRhgY", t: "VINNIPU", a: "DESH" },
   { id: "eOoIFc1sDeo", t: "OHMAMMA", a: "DESH x Young Fly" },
-  { id: "q2AQHWwf57Y", t: "ROLLIN'", a: "DESH, Young Fly, KKevin" },
+  { id: "q2AQHWwf57Y", t: "ROLLIN'", a: "DESH, Young Fly, KKevin", e: 200 },
   { id: "evqIjpWJUg0", t: "BANDANA | S600 MAYBACH", a: "KKevin, Young Fly, DESH" },
-  { id: "RT00oAdUmYc", t: "MOKKA", a: "DESH x Young Fly" },
+  { id: "RT00oAdUmYc", t: "MOKKA", a: "DESH x Young Fly", e: 164 },
   { id: "KHlWdiZKrBY", t: "HONEYMOON", a: "DESH, Young Fly" },
-  { id: "SHTqyvPB78E", t: "RAMPAPAPAM", a: "DESH, Azahriah, Young Fly, Lord Panamo" },
+  { id: "SHTqyvPB78E", t: "RAMPAPAPAM", a: "DESH, Azahriah, Young Fly, Lord Panamo", e: 190 },
   { id: "OuMq5pSVVwU", t: "3korty", a: "Azahriah" },
   { id: "7OYsYScnArI", t: "four moods", a: "Azahriah" },
-  { id: "L99hpL5rLrs", t: "introvertált dal", a: "Azahriah" },
+  { id: "L99hpL5rLrs", t: "introvertált dal", a: "Azahriah", e: 170 },
   { id: "OOvNkoO-xDE", t: "gát", a: "Azahriah" },
   { id: "Mfy0OweIo3w", t: "mind1", a: "Azahriah x Desh" },
   { id: "GyS1CLUUp8A", t: "MÉREG", a: "TIAH x Giaj x T. Danny" },
-  { id: "gKWSZeSBZQQ", t: "KARMA", a: "TIAH x Essemm" },
+  { id: "gKWSZeSBZQQ", t: "KARMA", a: "TIAH x Essemm", e: 188 },
   { id: "fBjqNQhlDAQ", t: "LEPEREG", a: "TIAH" },
-  { id: "C5n9erzao7M", t: "POFÁTLAN", a: "TIAH" },
-  { id: "DkGLa12Wflo", t: "GYÚRJÁ RÁ", a: "Tirpa feat. TIAH" },
+  { id: "C5n9erzao7M", t: "POFÁTLAN", a: "TIAH", e: 183 },
+  { id: "DkGLa12Wflo", t: "GYÚRJÁ RÁ", a: "Tirpa feat. TIAH", e: 185 },
   { id: "O2v_xg4qsuw", t: "HELLO HELLO", a: "BETON.HOFI x Hundred Sins" },
   { id: "IQeRwaQ-iWI", t: "SZALAD EL", a: "BETON.HOFI x Beatrick x millair" },
-  { id: "fwEBLNDOd-8", t: "POWERBANK", a: "BETON.HOFI" },
+  { id: "fwEBLNDOd-8", t: "POWERBANK", a: "BETON.HOFI", e: 161 },
   { id: "Igw_SMzyaTM", t: "PLASZTIK POHARAK", a: "BETON.HOFI" },
   { id: "oXDsYLXIcnI", t: "EMELEM A TÉTET", a: "ANUBII$ x BETON.HOFI x Co Lee" },
   { id: "7w778h9G5jA", t: "Iceberg", a: "Beatrick x Co Lee" },
@@ -245,62 +249,62 @@ const TRACKS = [
   { id: "K-o2fbMt4O0", t: "Always be mine", a: "BSW ft. Nagy Bogi" },
   { id: "2lKYJHInW_w", t: "Lidokain", a: "BSW feat. ByeAlex" },
   { id: "-CghMLtaL5E", t: "Tokio", a: "Dzsúdló feat. gyuris" },
-  { id: "o0TpKphrRuA", t: "Várnék", a: "Dzsúdló ft. Azahriah" },
-  { id: "b0UEgeWaLC8", t: "STRESSZ", a: "Dzsúdló" },
-  { id: "PZUG7JEbQNU", t: "KARÁCSONYI DAL", a: "DESH x Young Fly x Azahriah" },
+  { id: "o0TpKphrRuA", t: "Várnék", a: "Dzsúdló ft. Azahriah", e: 188 },
+  { id: "b0UEgeWaLC8", t: "STRESSZ", a: "Dzsúdló", e: 169 },
+  { id: "PZUG7JEbQNU", t: "KARÁCSONYI DAL", a: "DESH x Young Fly x Azahriah", e: 210 },
   { id: "5Yduf0wv-x0", t: "EGY ÉJSZAKA", a: "DESH" },
   { id: "5Lx7ebDuwMY", t: "BAKPAKK", a: "DESH x Young Fly x Azahriah" },
   { id: "gKyfx0mwQ9g", t: "HISTÓRIA", a: "DESH feat. L.L. Junior" },
-  { id: "WdWokgePEs8", t: "TALPRA CIGÁNYOK", a: "DESH" },
+  { id: "WdWokgePEs8", t: "TALPRA CIGÁNYOK", a: "DESH", e: 147 },
   { id: "ugTuUirpaSo", t: "Jól leszek újra", a: "Nagy Bogi x DESH" },
   { id: "qTMLQIRMn4o", t: "STRAWBERRY", a: "DESH" },
   { id: "NT1wMengxQc", t: "KUKÁSAUTÓ", a: "DESH" },
-  { id: "leTbbfjMyD4", t: "DRILL", a: "DESH" },
-  { id: "iCUXC81xCxY", t: "LEVÉL", a: "DESH" },
-  { id: "AnqYO0TCSG8", t: "APÁLY", a: "DESH" },
+  { id: "leTbbfjMyD4", t: "DRILL", a: "DESH", e: 182 },
+  { id: "iCUXC81xCxY", t: "LEVÉL", a: "DESH", e: 158 },
+  { id: "AnqYO0TCSG8", t: "APÁLY", a: "DESH", e: 131 },
   { id: "A7GboIx2bAk", t: "HARAMIA", a: "DESH" },
   { id: "RKFZfwC-Cxk", t: "ICE SPICE", a: "DESH" },
-  { id: "_8x21zThSXQ", t: "ELALUDNI", a: "DESH" },
+  { id: "_8x21zThSXQ", t: "ELALUDNI", a: "DESH", e: 151 },
   { id: "ZQNPPrQ5eBk", t: "PAPA", a: "Azahriah x DESH" },
   { id: "QORHdE1y_nA", t: "RÉT", a: "Azahriah x DESH" },
-  { id: "2IHuEMWJMZ4", t: "miafasz", a: "Azahriah x DESH" },
-  { id: "m901bM0wHMY", t: "utema", a: "Azahriah" },
+  { id: "2IHuEMWJMZ4", t: "miafasz", a: "Azahriah x DESH", e: 194 },
+  { id: "m901bM0wHMY", t: "utema", a: "Azahriah", e: 237 },
   { id: "hw3N0m45nM4", t: "delfincity", a: "Azahriah" },
   { id: "loR9Y-c0C8U", t: "cipoe", a: "Azahriah" },
   { id: "QYKa_lw9M5w", t: "bunker", a: "Azahriah" },
   { id: "OC8C4BsnizU", t: "vemzavr!", a: "Azahriah ft. Young Fly" },
-  { id: "4LSF7iTiXrI", t: "TITANIK", a: "Azahriah x GHO$TY" },
-  { id: "QnmISKNI73A", t: "Don’t Turn The Bass Down", a: "L’Entourloop & Azahriah" },
-  { id: "BLhZUTO3wJE", t: "Dada", a: "Manuel x Azahriah" },
-  { id: "7Ju4V4xPXSs", t: "ZHA MAJ DUR", a: "L.L. Junior x Azahriah feat. Farkas Pisti" },
+  { id: "4LSF7iTiXrI", t: "TITANIK", a: "Azahriah x GHO$TY", e: 164 },
+  { id: "QnmISKNI73A", t: "Don’t Turn The Bass Down", a: "L’Entourloop & Azahriah", e: 203 },
+  { id: "BLhZUTO3wJE", t: "Dada", a: "Manuel x Azahriah", e: 221 },
+  { id: "7Ju4V4xPXSs", t: "ZHA MAJ DUR", a: "L.L. Junior x Azahriah feat. Farkas Pisti", e: 221 },
   { id: "spJV3K4v90A", t: "Lonely", a: "Hundred Sins, Azahriah" },
   { id: "YJE_jUUDC3o", t: "Mindent Megbocsájt", a: "Hundred Sins, Azahriah" },
   { id: "Cicm-sN9Db8", t: "OYE", a: "Hundred Sins, Azahriah" },
   { id: "J0T6WhDvDBA", t: "Nekem elég", a: "Young Fly ft. Tóth Andi" },
   { id: "1NF8S57RIjw", t: "Ne Gyere Át", a: "Young Fly" },
   { id: "K-8TMw_m_aY", t: "Viszlát", a: "Berta’Lami x Young Fly" },
-  { id: "WZOfF9Hz6_w", t: "Délibáb", a: "Young Fly x M Ricch" },
-  { id: "K5uizdcoj5w", t: "24 Karát", a: "Young Fly x DESH" },
+  { id: "WZOfF9Hz6_w", t: "Délibáb", a: "Young Fly x M Ricch", e: 201 },
+  { id: "K5uizdcoj5w", t: "24 Karát", a: "Young Fly x DESH", e: 129 },
   { id: "5W0PC1EpoK0", t: "PAKISZTÁNI/POPO", a: "DESH, Young Fly" },
   { id: "XdvsSggzysw", t: "Hosszú út", a: "Manuel feat. Young Fly" },
   { id: "6NDkgqutzaI", t: "Red flag", a: "BSW, Young Fly" },
   { id: "U4XlChpKckg", t: "NO WOMAN NO CRY", a: "T. Danny, Young Fly" },
   { id: "koO_fbo_pag", t: "MIRE SZÁMÍTOTTÁL", a: "BETON.HOFI x Hundred Sins" },
   { id: "JCow8cP4h78", t: "BAGIRA", a: "BETON.HOFI, Hundred Sins" },
-  { id: "laEhRvMIaL8", t: "ANGYALOK", a: "BETON.HOFI" },
+  { id: "laEhRvMIaL8", t: "ANGYALOK", a: "BETON.HOFI", e: 212 },
   { id: "uMoX2zcfS8Q", t: "PANASONIC", a: "BETON.HOFI" },
   { id: "HfInsOhx_ss", t: "PONT JÓ", a: "BETON.HOFI x ANUBII$" },
-  { id: "PIi0NCqnLjc", t: "BETON.HOF1", a: "BETON.HOFI" },
+  { id: "PIi0NCqnLjc", t: "BETON.HOF1", a: "BETON.HOFI", e: 163 },
   { id: "a_wgcIKAZ-I", t: "MEGGYFÁN", a: "BETON.HOFI" },
   { id: "vDTa9evuzY4", t: "Nefelejcs / Rácsok", a: "Àbáse, BETON.HOFI" },
-  { id: "vU1NVfTurSE", t: "BE VAGYOK ZÁRVA", a: "BETON.HOFI" },
+  { id: "vU1NVfTurSE", t: "BE VAGYOK ZÁRVA", a: "BETON.HOFI", e: 132 },
   { id: "-4MzYNiDH50", t: "TÜKÖRTEREM", a: "BETON.HOFI x ANUBII$" },
-  { id: "P9qI-2zmn90", t: "NESZTEK!", a: "Irie Maffia feat. BETON.HOFI" },
+  { id: "P9qI-2zmn90", t: "NESZTEK!", a: "Irie Maffia feat. BETON.HOFI", e: 128 },
   { id: "jpQ72G4-c0s", t: "POKOL", a: "BETON.HOFI" },
   { id: "oBtbsCRnCf0", t: "DAY 0", a: "BETON.HOFI x ANUBII$" },
   { id: "Giijw6ZKoeQ", t: "KÖZEL-KILÉT-EURÓPA", a: "BETON.HOFI" },
   { id: "_PhHVe9vdjg", t: "PESTI ISTENEK", a: "BETON.HOFI" },
-  { id: "UZSHKEAUTdg", t: "ÁRVAHOUSE", a: "BETON.HOFI" },
+  { id: "UZSHKEAUTdg", t: "ÁRVAHOUSE", a: "BETON.HOFI", e: 218 },
   { id: "QoIJc5xQ6fk", t: "POWERBANK 2", a: "BETON.HOFI" },
   { id: "EMY3D53XUuI", t: "HARD RESET", a: "BETON.HOFI, Hundred Sins" },
   { id: "IQ1Idul9H4M", t: "kamera", a: "Dzsúdló" },
@@ -348,7 +352,7 @@ const TRACKS = [
   { id: "FDUe9BP_KRI", t: "Passport", a: "BSW" },
   { id: "eowi9-s0aEE", t: "BULLSHIT", a: "Belano x BSW" },
   { id: "zSISvlwYweI", t: "$oha nem elég", a: "BSW" },
-  { id: "W5j89pdFG98", t: "HELLO", a: "BSW" },
+  { id: "W5j89pdFG98", t: "HELLO", a: "BSW", e: 164 },
   { id: "D3S72ckcs08", t: "Very big", a: "BSW" },
   { id: "nr42IDeK13w", t: "Cold", a: "BSW" },
   { id: "L3MfaRrZNnc", t: "Megtanítalak élni", a: "BSW" },
@@ -356,52 +360,52 @@ const TRACKS = [
   { id: "EjMerArbOOA", t: "SUKÁR BABY", a: "Bricklake x BSW" },
   { id: "tMUVCA_A_z8", t: "Minden éjjel", a: "BSW" },
   { id: "WTCyN1COM40", t: "GUCCI", a: "BSW" },
-  { id: "yEyPiy_pBeA", t: "Még mindig", a: "BSW" },
-  { id: "xxYb4ZuUy8g", t: "MOKAMBO GANG", a: "BSW km. T. Danny, Lmen Prala" },
+  { id: "yEyPiy_pBeA", t: "Még mindig", a: "BSW", e: 188 },
+  { id: "xxYb4ZuUy8g", t: "MOKAMBO GANG", a: "BSW km. T. Danny, Lmen Prala", e: 231 },
   { id: "aftaU2mpwfc", t: "Tíz Lány", a: "T. Danny feat. Bruno" },
   { id: "VwuKKo7zTYg", t: "Analóg fotó", a: "Glazzard feat. T. Danny" },
   { id: "XkpCLIswnrw", t: "DÉRYNÉ", a: "T. Danny" },
   { id: "1DXabP2alKA", t: "Még Egyszer", a: "T. Danny" },
-  { id: "JU7btMYmm24", t: "Megmondtam", a: "T. Danny" },
+  { id: "JU7btMYmm24", t: "Megmondtam", a: "T. Danny", e: 197 },
   { id: "vbshGyyxMuE", t: "Rendben Lesz", a: "T. Danny feat. Follow The Flow" },
   { id: "3y-DklE1ink", t: "NEM ÉRI MEG", a: "KKevin x T. Danny" },
   { id: "RdENfZlo-_o", t: "ROCKSTAR", a: "T. Danny" },
-  { id: "iQIhqBomoXE", t: "xXx", a: "T. Danny" },
+  { id: "iQIhqBomoXE", t: "xXx", a: "T. Danny", e: 230 },
   { id: "qflpOu5SyEk", t: "Van Valami", a: "T. Danny feat. RZMVS" },
   { id: "HAhc46jwMX4", t: "FUEGO", a: "Marics Peti feat. T. Danny" },
   { id: "61NkGDi6wEw", t: "BOSSZÚVÁGY", a: "T. Danny" },
   { id: "B8wL1GIDcm4", t: "PLETYKA", a: "T. Danny" },
-  { id: "rm1IOHnz5d8", t: "FÉLEK", a: "T. Danny" },
+  { id: "rm1IOHnz5d8", t: "FÉLEK", a: "T. Danny", e: 172 },
   { id: "omJMDdu0D-E", t: "VISZLÁT", a: "T. Danny" },
   { id: "owNGVYto9nY", t: "HAHÓ", a: "T. Danny feat. KKevin" },
   { id: "-3AO6tjemSY", t: "JÓÉJSZAKÁT", a: "T. Danny feat. KKevin" },
-  { id: "iliQPIJaxmA", t: "ALL NIGHT", a: "VALMAR feat. Bruno, T. Danny, KKevin" },
+  { id: "iliQPIJaxmA", t: "ALL NIGHT", a: "VALMAR feat. Bruno, T. Danny, KKevin", e: 145 },
   { id: "g-12jN7pj1Y", t: "UGYANÚGY", a: "VALMAR" },
-  { id: "OMY6U4FY4hg", t: "Éget a nap", a: "VALMAR x Manuel" },
+  { id: "OMY6U4FY4hg", t: "Éget a nap", a: "VALMAR x Manuel", e: 151 },
   { id: "C7sELN0YxNQ", t: "BRAZIL FÁNK", a: "VALMAR ft. Bruno, KKevin" },
   { id: "xts1ohT7GjY", t: "100x", a: "VALMAR" },
-  { id: "hkSwOlwQqGY", t: "ÁTUTAZÓ", a: "VALMAR x Hundred Sins" },
-  { id: "EJbARViTBRo", t: "KIRÁLYLÁNY", a: "VALMAR, Hooligans" },
+  { id: "hkSwOlwQqGY", t: "ÁTUTAZÓ", a: "VALMAR x Hundred Sins", e: 176 },
+  { id: "EJbARViTBRo", t: "KIRÁLYLÁNY", a: "VALMAR, Hooligans", e: 204 },
   { id: "mNdECgkEWzY", t: "Visz A Vérem", a: "VALMAR ft. Bruno x Spacc vs Manuel" },
   { id: "RBlh62UZzCo", t: "SZÍNVAK", a: "VALMAR" },
   { id: "EgecvO4zPTM", t: "BELEÚSZOK", a: "VALMAR feat. Nótár Mary" },
-  { id: "ZnBXhDknskU", t: "Valencia", a: "Tomi x VALMAR" },
-  { id: "cjSo5KcHMqQ", t: "Playboy", a: "VALMAR" },
+  { id: "ZnBXhDknskU", t: "Valencia", a: "Tomi x VALMAR", e: 176 },
+  { id: "cjSo5KcHMqQ", t: "Playboy", a: "VALMAR", e: 160 },
   { id: "Flo9CtfvPHE", t: "Szép Mosolyú Lány", a: "Marics Peti x Radics Gigi" },
   { id: "Ne-ZnwE_9m0", t: "Balatoni lány", a: "Szikora Róbert x VALMAR" },
-  { id: "79nY7g8O3SY", t: "PRNSTR", a: "KKevin x Bruno x VINI" },
-  { id: "sSil4sFFfbs", t: "CIA", a: "Marics Peti feat. KKevin, Dzsindzser" },
+  { id: "79nY7g8O3SY", t: "PRNSTR", a: "KKevin x Bruno x VINI", e: 139 },
+  { id: "sSil4sFFfbs", t: "CIA", a: "Marics Peti feat. KKevin, Dzsindzser", e: 181 },
   { id: "mtRNgIsnKKY", t: "JACUZZI", a: "KKevin feat. BSW" },
   { id: "UVtlm_1J_tc", t: "UTCA", a: "Bruno x Spacc feat. KKevin" },
   { id: "kVfNv59ELVQ", t: "CSAKASZESZ", a: "KKevin" },
-  { id: "xY7qN_R8Oys", t: "Csavargó", a: "KKevin ft. L.L. Junior" },
+  { id: "xY7qN_R8Oys", t: "Csavargó", a: "KKevin ft. L.L. Junior", e: 175 },
   { id: "l3eVv3zONT8", t: "TAKE YOUR TIME", a: "KKevin" },
   { id: "CSHgdjFXslI", t: "BOXGÉP", a: "KKevin x VINI" },
   { id: "smH1aItJMB4", t: "PLEKNI", a: "KKevin x VINI" },
   { id: "nbSpo4NPb_8", t: "PATKÁNY", a: "KKevin" },
   { id: "YO5Nz29UUgY", t: "MAGAMÉRT", a: "KKevin" },
   { id: "fskgnUKpH24", t: "BANG", a: "KKevin x VINI" },
-  { id: "WL7_DjyZGtg", t: "WAY TOO HIGH", a: "KKevin feat. RZMVS" },
+  { id: "WL7_DjyZGtg", t: "WAY TOO HIGH", a: "KKevin feat. RZMVS", e: 158 },
   { id: "sCtrOvKNI2o", t: "PROSECCO", a: "KKevin ft. Bruno" },
   { id: "Hnl9Jqr5quQ", t: "GETTÓMILLIOMOS", a: "KKevin x L.L. Junior" },
   { id: "MuSrOftUk4I", t: "Rólad Szól", a: "KKevin" },
@@ -411,7 +415,7 @@ const TRACKS = [
   { id: "oTVeWp34PeE", t: "Trónfosztó", a: "VZS" },
   { id: "wSiODNTkwHU", t: "SeanPaul", a: "Burai, Mario, VZS feat. Goore, Kretz" },
   { id: "sUefYV2puIo", t: "NE MÉREGESS", a: "VZS" },
-  { id: "pFfpDklYQXY", t: "SÍR A GITÁR", a: "VZS" },
+  { id: "pFfpDklYQXY", t: "SÍR A GITÁR", a: "VZS", e: 189 },
   { id: "LuhbFVljZx8", t: "Getto Flow", a: "VZS" },
   { id: "FEmS5rvKbSY", t: "SZÉTSZEDLEK", a: "Belano x VZS" },
   { id: "NqQiK4qst9g", t: "Birkanyírás", a: "Mario x Kalo Bone x Kretz x VZS" },
@@ -421,14 +425,14 @@ const TRACKS = [
   { id: "nQJ9wtT2HEo", t: "Oy Lele", a: "VZS" },
   { id: "b1JpHnFp2kA", t: "BIRTHDAY", a: "VZS" },
   { id: "kvR-VPx28XA", t: "MINDIG A JÓBAN", a: "VZS" },
-  { id: "xcHjmdQgFJU", t: "KÖTELEZ A VÉR", a: "VZS x Varga Norbi" },
-  { id: "l7wYBmw4m28", t: "KI AZ A HENN?!", a: "HENN" },
+  { id: "xcHjmdQgFJU", t: "KÖTELEZ A VÉR", a: "VZS x Varga Norbi", e: 146 },
+  { id: "l7wYBmw4m28", t: "KI AZ A HENN?!", a: "HENN", e: 166 },
   { id: "R5OzJW9UQz0", t: "TULIPÁN", a: "HENN" },
-  { id: "LuSj69Mm_8g", t: "MADAME", a: "HENN" },
+  { id: "LuSj69Mm_8g", t: "MADAME", a: "HENN", e: 108 },
   { id: "vNUajEA7LqQ", t: "BÁNOM", a: "HENN" },
   { id: "eUAwfnckFA4", t: "MARINA", a: "HENN" },
   { id: "4yUpWqODimo", t: "LOWRIDER", a: "HENN" },
-  { id: "KBiMRmBu7IQ", t: "CHAJE", a: "HENN" },
+  { id: "KBiMRmBu7IQ", t: "CHAJE", a: "HENN", e: 136 },
   { id: "Jho2Vm2EZP0", t: "MADEMOISELLE", a: "HENN" },
   { id: "jMthJRsZxF4", t: "SZÉP SZEMŰ", a: "HENN" },
   { id: "Rddc5s24fJA", t: "SANDELA 2", a: "HENN" },
@@ -462,13 +466,13 @@ const TRACKS = [
   { id: "Xjl4HmQUsyk", t: "Keverem", a: "Bruno x Spacc" },
   { id: "HWAZkI8XdEw", t: "Melegítő", a: "Lil Frakk" },
   { id: "1rKCfh5jNO4", t: "Alternatív Napok", a: "Lil Frakk" },
-  { id: "LDCVZ3AuSrI", t: "melodráma", a: "kristoaf, Lil Frakk, Hundred Sins" },
+  { id: "LDCVZ3AuSrI", t: "melodráma", a: "kristoaf, Lil Frakk, Hundred Sins", e: 178 },
   { id: "_SMOcG8H3Yw", t: "Free Johnny", a: "Manuel" },
   { id: "1pI1ilkog5E", t: "Mint egy filmben", a: "Manuel" },
   { id: "M72m3Zvcazo", t: "Nosztalgia", a: "Manuel" },
-  { id: "I-j1UWOGs4M", t: "Popstar", a: "Manuel" },
+  { id: "I-j1UWOGs4M", t: "Popstar", a: "Manuel", e: 219 },
   { id: "drtITwXluBA", t: "Miért vonz jobban az ősz", a: "Manuel" },
-  { id: "juJiQSCQ-cU", t: "KicsiLány", a: "ByeAlex és a Slepp" },
+  { id: "juJiQSCQ-cU", t: "KicsiLány", a: "ByeAlex és a Slepp", e: 316 },
   { id: "EhEIHmhVd1s", t: "Így hagysz el...", a: "ByeAlex és a Slepp x Hiro" },
   { id: "_uubSOWgSac", t: "bangkok", a: "byealex és a slepp" },
   { id: "6ZDNc9cNgek", t: "hungarian mambo", a: "byealex és a slepp" },
@@ -505,6 +509,13 @@ const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform 
 let lastTick = performance.now();
 let master = 80;
 let fadeLen = 8;
+let early = 0;             // "Korábbi váltás": ennyi mp-et levágunk minden klip végéből
+// A dal valódi vége: a TRACKS-ben megadott "e" (ahol a klip végén már csak csend/beszéd van), mínusz a korábbi váltás
+function songEnd(tr, dur) {
+  let end = tr && tr.e && tr.e < dur ? tr.e : dur;
+  if (early && end > 60) end -= early;
+  return end;
+}
 const bad = new Set();
 
 function shuffle(arr) {
@@ -636,15 +647,16 @@ function tick() {
   if (!on || ready < 2) return;
   const p = players[active];
   const cur = p.getCurrentTime ? p.getCurrentTime() : 0;
-  const dur = p.getDuration ? p.getDuration() : 0;
+  const fullDur = p.getDuration ? p.getDuration() : 0;
+  const dur = fullDur ? songEnd(current[active], fullDur) : 0;
 
   if (!fade) {
-    $("fill").style.width = dur ? (cur / dur * 100) + "%" : "0";
+    $("fill").style.width = dur ? Math.min(100, cur / dur * 100) + "%" : "0";
     $("fadezone").style.width = dur ? Math.min(100, fadeLen / dur * 100) + "%" : "0";
     $("tCur").textContent = fmt(cur); $("tDur").textContent = fmt(dur);
     const left = dur - cur;
     // 10 percnél hosszabb videó (koncertfilm, mix) nem rádióba való → tovább
-    if (dur > 600 && current[active]) { bad.add(current[active].id); beginCrossfade(false); return; }
+    if (fullDur > 600 && current[active]) { bad.add(current[active].id); beginCrossfade(false); return; }
     // időben elkezdjük a háttérben betölteni a következő számot (lassú netnél is kész lesz)
     if (!prep && dur > 20 && left <= fadeLen + LEAD) preload(1 - active, pos + 1);
     if (dur > 20 && left <= fadeLen + 0.25 && p.getPlayerState() === YT.PlayerState.PLAYING) beginCrossfade(false);
@@ -721,6 +733,9 @@ $("vol").addEventListener("input", (e) => {
 });
 $("fade").addEventListener("input", (e) => {
   fadeLen = +e.target.value; $("fadeOut").textContent = fadeLen ? fadeLen + " mp" : "nincs";
+});
+$("early").addEventListener("input", (e) => {
+  early = +e.target.value; $("earlyOut").textContent = early ? "−" + early + " mp" : "ki";
 });
 
 $("shareUrl").value = location.href.split("#")[0];
