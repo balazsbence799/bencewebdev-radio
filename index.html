@@ -595,6 +595,35 @@ const TRACKS = [
   { id: "3jzxxPkPM-4", t: "Siss", a: "Bruno x Spacc" },
   { id: "EePoS6COqYs", t: "AFTERPARTY", a: "Bruno x Mollywood" },
   { id: "dgAF3uV46jk", t: "MONA LISA", a: "Bruno" },
+  { id: "yHHaBTrdKag", t: "ADIEU", a: "DESH", e: 220 },
+  { id: "q78aoSM3sTc", t: "NADIEU", a: "DESH" },
+  { id: "V44om7F9CNA", t: "HOW WE DO", a: "DESH" },
+  { id: "CpzEiqOmXU8", t: "SZEXBOMB", a: "DESH" },
+  { id: "k4pGUkoj2Ik", t: "MULATOZOK", a: "DESH" },
+  { id: "Slg_u2Eo24k", t: "KISBALU", a: "DESH" },
+  { id: "VyJtEMcxSV4", t: "ÁTHÍVHATSZ", a: "DESH" },
+  { id: "FceEZ6y3J0s", t: "MALIBU", a: "DESH" },
+  { id: "gX5YE9gtGHM", t: "VANAZACIGI", a: "DESH" },
+  { id: "R3-FBO73hA8", t: "DESHPERADO", a: "DESH" },
+  { id: "GcE7jVoSo0o", t: "RETRO", a: "DESH" },
+  { id: "kLJ75fc3yhI", t: "PIASZAG", a: "DESH" },
+  { id: "pN8z0PzOX54", t: "WALKIN' A STREET", a: "DESH, Azahriah, Young Fly" },
+  { id: "VxZr_lMYGQU", t: "ELDORÁDÓ", a: "DESH, Azahriah" },
+  { id: "2FAkE0ZuM-U", t: "LESZAROM", a: "Rico ft. T. Danny, DESH", e: 221 },
+  { id: "szGeQp5Wk1U", t: "Távol Tőled", a: "Dinero x DESH" },
+  { id: "Xt1ePCjZokM", t: "KAMAGRA GANG", a: "BSW, KKevin, Lmen Prala, DESH" },
+  { id: "5pXMh3KQK6Q", t: "pullup", a: "Azahriah x DESH" },
+  { id: "TiyFoqD8GdA", t: "ceremónia", a: "Azahriah x DESH" },
+  { id: "W30gHpCob2k", t: "felednéd", a: "Azahriah x DESH" },
+  { id: "kLBPvHovQaY", t: "habibi", a: "Azahriah x DESH" },
+  { id: "HmtCxARmjyw", t: "lóerő", a: "Azahriah x DESH" },
+  { id: "RPxW_RZVbPo", t: "lost tiki", a: "Azahriah x DESH" },
+  { id: "M82re6uIrsI", t: "tisztán iszom", a: "Azahriah x DESH" },
+  { id: "MbUwxZmmVao", t: "drogba", a: "Azahriah x DESH" },
+  { id: "cLFE7B8Cf_A", t: "megmentő", a: "Azahriah x DESH" },
+  { id: "cCiMVpRh-Kk", t: "béke", a: "Azahriah x DESH ft. Young Fly, Lord Panamo, Copy Con" },
+  { id: "NLhi0he4_iI", t: "NEXT N GO", a: "VINI x Nagy Bogi" },
+  { id: "ugTuUirpaSo", t: "Jól leszek újra", a: "Nagy Bogi x DESH" },
 ];
 
 /* ---------- állapot ---------- */
@@ -629,10 +658,29 @@ function shuffle(arr) {
   for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
   return a;
 }
+/* KEDVENC: az ő számai gyakrabban szólnak – minden FAV_EVERY. szám tőle jön.
+   A kedvenc számai külön körben forognak, így egyik sem ismétlődik, amíg az összes le nem ment. */
+const FAVORITE = /desh/i;
+const FAV_EVERY = 3;
+let favPool = [];
+let lastFav = -1;
+function nextFav() {
+  if (!favPool.length) {
+    favPool = shuffle(TRACKS.map((_, i) => i).filter((i) => FAVORITE.test(TRACKS[i].a) && !bad.has(TRACKS[i].id)));
+    if (favPool.length > 1 && favPool[favPool.length - 1] === lastFav) favPool.unshift(favPool.pop());
+  }
+  lastFav = favPool.pop();
+  return lastFav;
+}
 function refillQueue() {
   const last = queue[queue.length - 1];
-  let next = shuffle(TRACKS.map((_, i) => i).filter((i) => !bad.has(TRACKS[i].id)));
-  if (next.length > 1 && next[0] === last) next.push(next.shift()); // ne legyen ugyanaz kétszer egymás után
+  const others = shuffle(TRACKS.map((_, i) => i).filter((i) => !FAVORITE.test(TRACKS[i].a) && !bad.has(TRACKS[i].id)));
+  if (others.length > 1 && others[0] === last) others.push(others.shift()); // ne legyen ugyanaz kétszer egymás után
+  const next = [];
+  others.forEach((i, k) => {
+    next.push(i);
+    if ((k + 1) % (FAV_EVERY - 1) === 0) { const f = nextFav(); if (f !== undefined) next.push(f); }
+  });
   queue = queue.concat(next);
 }
 function trackAt(p) { while (queue.length <= p + 6) refillQueue(); return TRACKS[queue[p]]; }
